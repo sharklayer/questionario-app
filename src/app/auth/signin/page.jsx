@@ -16,7 +16,12 @@ export default function Login() {
     // Redireciona automaticamente se o usuário já estiver autenticado
     useEffect(() => {
         if (session) {
-            router.replace('/');
+            // Redireciona para o dashboard se o usuário for administrador
+            if (session?.user?.admin === true) {
+                router.replace('/admin/home');
+            } else {
+                router.replace('/');
+            }
         }
     }, [session]);
 
@@ -48,7 +53,12 @@ export default function Login() {
         });
 
         if (response?.ok) {
-            router.replace('/');
+            // Redireciona com base na autenticação
+            if (session?.user?.admin === true) {
+                router.replace('/admin');
+            } else {
+                router.replace('/');
+            }
         } else {
             setServerError('Email e/ou senha inválidos!');
         }
@@ -114,17 +124,6 @@ export default function Login() {
                             )}
                         </div>
 
-                        <div className="flex items-center justify-between">
-                            <div className="text-sm leading-6">
-                                <Link
-                                    href="/auth/signup"
-                                    className="font-semibold text-indigo-600 hover:text-indigo-500"
-                                >
-                                    Não tem uma conta? Cadastre-se
-                                </Link>
-                            </div>
-                        </div>
-
                         <div>
                             <button
                                 type="submit"
@@ -134,6 +133,16 @@ export default function Login() {
                             </button>
                         </div>
                     </form>
+
+                    <p className="mt-10 text-center text-sm text-gray-500">
+                        Não tem uma conta?{' '}
+                        <Link
+                            href="/auth/signup"
+                            className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
+                        >
+                            Cadastre-se
+                        </Link>
+                    </p>
                 </div>
             </div>
         </div>

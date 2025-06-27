@@ -9,9 +9,10 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="pt-br" className="h-full bg-gray-50">
+    <html lang="en" className="h-full bg-gray-50">
       <body className="h-full">
         <SessionProvider>
+          <div className="text-blue-500">Teste de Estilo Tailwind</div>
           {children}
         </SessionProvider>
       </body>
