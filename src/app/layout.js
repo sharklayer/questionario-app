@@ -9,8 +9,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="pt-br">
-      <body>
+    <html lang="pt-br" className="h-full bg-gray-50">
+      <body className="h-full">
         <SessionProvider>
           {children}
         </SessionProvider>
