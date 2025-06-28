@@ -5,6 +5,7 @@ import Usuario from "@/models/usuario.model.mjs";
 import bcrypt from "bcrypt";
 
 export default NextAuth({
+  debug: true,
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -46,6 +47,7 @@ export default NextAuth({
         session.user.isAdmin = token.isAdmin;
         session.user.nome = token.nome;
       }
+      console.log('Sessão modificada:', session);
       return session;
     },
   },

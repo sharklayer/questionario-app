@@ -17,7 +17,7 @@ export default function Login() {
     useEffect(() => {
         if (session) {
             // Redireciona para o dashboard se o usuário for administrador
-            if (session?.user?.admin === true) {
+            if (session?.user?.isAdmin === true) {
                 router.replace('/admin/home');
             } else {
                 router.replace('/');
@@ -44,18 +44,19 @@ export default function Login() {
         formState: { errors },
     } = useForm({ resolver: yupResolver(loginSchema) });
 
-    // Função de autenticação
+    //função de autenticação
     const onSubmit = async (credentials) => {
-        setServerError(''); // Limpa erros anteriores
+        setServerError('');
         const response = await signIn('credentials', {
             ...credentials,
             redirect: false,
         });
-
-        if (response?.ok) {
-            // Redireciona com base na autenticação
-            if (session?.user?.admin === true) {
-                router.replace('/admin');
+        console.log('Resposta do signIn:', response);
+        
+        //redireciona com base na autenticação
+        if (response?.ok) {    
+            if (session?.user?.isAdmin === true) {
+                router.replace('/admin/home');
             } else {
                 router.replace('/');
             }
