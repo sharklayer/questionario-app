@@ -16,7 +16,6 @@ export default function Login() {
     // Redireciona automaticamente se o usuário já estiver autenticado
     useEffect(() => {
         if (session) {
-            // Redireciona para o dashboard se o usuário for administrador
             if (session?.user?.isAdmin === true) {
                 router.replace('/admin/home');
             } else {
