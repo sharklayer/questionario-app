@@ -1,4 +1,4 @@
-'use client'
+/*'use client'
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { UserCircleIcon, ArrowRightOnRectangleIcon, HomeIcon } from "@heroicons/react/24/outline";
@@ -29,4 +29,4 @@ export default function MenuNavegacao({ session }) {
       </div>
     </nav>
   );
-}
+}*/

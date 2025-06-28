@@ -4,6 +4,11 @@ import { useSession, signIn } from "next-auth/react";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 
+// Função para detectar se uma questão tem múltiplas corretas
+function isMultiplaCorreta(q) {
+  return q.tipo === "objetiva" && q.opcoes.filter(o => o.correta).length > 1;
+}
+
 export default function QuestionarioAluno() {
   const { data: session, status } = useSession();
   const [questoes, setQuestoes] = useState([]);
@@ -12,6 +17,7 @@ export default function QuestionarioAluno() {
   const [carregando, setCarregando] = useState(true);
   const [jaRespondeu, setJaRespondeu] = useState(false);
   const [historico, setHistorico] = useState(null);
+  const [revisando, setRevisando] = useState(false);
 
   useEffect(() => {
     if (status === "loading") return;
@@ -37,15 +43,31 @@ export default function QuestionarioAluno() {
       });
   }, [session]);
 
-  const handleResposta = (questaoId, idxOpcao) => {
-    setRespostas(prev => ({
-      ...prev,
-      [questaoId]: [idxOpcao],
-    }));
+  const handleResposta = (questaoId, idxOpcao, tipo, checked) => {
+    setRespostas(prev => {
+      if (tipo === "objetiva" && isMultiplaCorreta(questoes.find(q => q._id === questaoId))) {
+        // checkbox (múltiplas)
+        const selecionadas = new Set(prev[questaoId] || []);
+        if (checked) {
+          selecionadas.add(idxOpcao);
+        } else {
+          selecionadas.delete(idxOpcao);
+        }
+        return { ...prev, [questaoId]: Array.from(selecionadas) };
+      } else {
+        // radio (única)
+        return { ...prev, [questaoId]: [idxOpcao] };
+      }
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setRevisando(true);
+  };
+
+  const handleEnviarDefinitivo = async () => {
+    // Envia para API corrigir
     const payload = Object.entries(respostas).map(([questaoId, resposta]) => ({
       questaoId,
       resposta,
@@ -60,10 +82,12 @@ export default function QuestionarioAluno() {
       const data = await res.json();
       alert(data.error || "Você já respondeu o questionário.");
       setJaRespondeu(true);
+      setRevisando(false);
       return;
     }
     const data = await res.json();
     setResultado(data);
+    setRevisando(false);
   };
 
   if (carregando && !jaRespondeu) return <div className="text-center py-8 text-gray-400">Carregando questões...</div>;
@@ -130,36 +154,122 @@ export default function QuestionarioAluno() {
     );
   }
 
+  // Tela de revisão antes do envio
+  if (revisando) {
+    return (
+      <div className="max-w-2xl mx-auto bg-white shadow rounded p-6">
+        <h2 className="text-2xl font-bold mb-6 text-blue-700">Revisão das Respostas</h2>
+        <ul className="space-y-8">
+          {questoes.map((q, idx) => {
+            const multipla = isMultiplaCorreta(q);
+            const marcadas = respostas[q._id] || [];
+            return (
+              <li key={q._id} className="mb-4">
+                <div className="font-semibold text-lg text-gray-700 mb-2">{idx + 1}. {q.enunciado}</div>
+                <ul>
+                  {q.opcoes.map((op, i) => (
+                    <li key={i} className={clsx(
+                      "flex items-center gap-2 py-1",
+                      marcadas.includes(i)
+                        ? "bg-yellow-100 border-l-4 border-yellow-400"
+                        : ""
+                    )}>
+                      <span>
+                        {multipla
+                          ? <input type="checkbox" checked={marcadas.includes(i)} disabled />
+                          : <input type="radio" checked={marcadas.includes(i)} disabled />}
+                      </span>
+                      <span>{op.texto}</span>
+                      {marcadas.includes(i) && <span className="text-yellow-700 ml-2">(selecionada)</span>}
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            );
+          })}
+        </ul>
+        <div className="flex gap-4 mt-8 justify-center">
+          <button
+            type="button"
+            className="bg-gray-400 text-white px-4 py-2 rounded font-bold hover:bg-gray-500"
+            onClick={() => setRevisando(false)}
+          >
+            Editar respostas
+          </button>
+          <button
+            type="button"
+            className="bg-blue-600 text-white px-4 py-2 rounded font-bold hover:bg-blue-700"
+            onClick={handleEnviarDefinitivo}
+          >
+            Enviar respostas
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // Formulário das questões
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl mx-auto bg-white shadow rounded p-6">
       <h2 className="text-2xl font-bold mb-6 text-blue-700">Questionário</h2>
-      {questoes.map((q, idx) => (
-        <div key={q._id} className="mb-8">
-          <div className="mb-2 font-semibold text-lg text-gray-700">{idx + 1}. {q.enunciado}</div>
-          <ul className="space-y-2">
-            {q.opcoes.map((op, i) => (
-              <li key={i} className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name={q._id}
-                  value={i}
-                  checked={respostas[q._id]?.includes(i) || false}
-                  onChange={() => handleResposta(q._id, i)}
-                  className="form-radio text-blue-600"
-                  id={`q${q._id}o${i}`}
-                />
-                <label htmlFor={`q${q._id}o${i}`} className="text-gray-700 cursor-pointer">{op.texto}</label>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+      {questoes.map((q, idx) => {
+        const multipla = isMultiplaCorreta(q);
+        const inputType = multipla ? "checkbox" : "radio";
+        return (
+          <div key={q._id} className="mb-8">
+            <div className="mb-2 font-semibold text-lg text-gray-700 flex items-center gap-2">
+              <span>{idx + 1}.</span>
+              <textarea
+                value={q.enunciado}
+                readOnly
+                className="w-full border rounded resize-y bg-gray-50 min-h-[60px] py-1 px-2"
+                rows={3}
+                tabIndex={-1}
+                style={{ fontWeight: 500, fontSize: "1.1em", pointerEvents: "none" }}
+              />
+            </div>
+            <ul className="space-y-2">
+              {q.opcoes.map((op, i) => (
+                <li key={i} className="flex items-center gap-2">
+                  <input
+                    type={inputType}
+                    name={multipla ? `${q._id}_${i}` : q._id}
+                    value={i}
+                    checked={
+                      multipla
+                        ? respostas[q._id]?.includes(i) || false
+                        : respostas[q._id]?.[0] === i
+                    }
+                    onChange={e =>
+                      handleResposta(
+                        q._id,
+                        i,
+                        q.tipo,
+                        multipla ? e.target.checked : undefined
+                      )
+                    }
+                    className="form-checkbox text-blue-600"
+                    id={`q${q._id}o${i}`}
+                  />
+                  <textarea
+                    value={op.texto}
+                    readOnly
+                    className="border rounded bg-gray-50 resize-y min-h-[32px] py-1 px-2 w-full"
+                    rows={2}
+                    tabIndex={-1}
+                    style={{ pointerEvents: "none" }}
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })}
       <button
         type="submit"
         className="w-full bg-blue-600 text-white py-2 mt-4 rounded font-bold hover:bg-blue-700 transition"
       >
-        Enviar respostas
+        Revisar respostas
       </button>
     </form>
   );
