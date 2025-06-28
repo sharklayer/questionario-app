@@ -1,5 +1,5 @@
 import { connectDB } from "@/lib/dbConnect";
-import Questao from "@/models/questao.model";
+import Questao from "@/models/questao.model.mjs";
 import { getSession } from "next-auth/react";
 
 // Essa rota permite editar (PUT) ou excluir (DELETE) uma questão específica pelo ID

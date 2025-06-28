@@ -1,4 +1,5 @@
-import { Schema, model, models } from "mongoose";
+import mongoose from 'mongoose';
+const { Schema, model, models } = mongoose;
 
 const questaoSchema = new Schema({
   tipo: {
@@ -16,6 +17,8 @@ const questaoSchema = new Schema({
       correta: Boolean,
     }
   ],
+}, {
+  collection: 'questoes'
 });
 
 export default models.Questao || model('Questao', questaoSchema);

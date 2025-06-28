@@ -1,5 +1,5 @@
 import { connectDB } from "@/lib/dbConnect";
-import Usuario from "@/models/usuario.model";
+import Usuario from "@/models/usuario.model.mjs";
 import bcrypt from "bcrypt";
 
 export default async function handler(req, res) {

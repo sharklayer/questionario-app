@@ -133,16 +133,6 @@ export default function Login() {
                             </button>
                         </div>
                     </form>
-
-                    <p className="mt-10 text-center text-sm text-gray-500">
-                        Não tem uma conta?{' '}
-                        <Link
-                            href="/auth/signup"
-                            className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
-                        >
-                            Cadastre-se
-                        </Link>
-                    </p>
                 </div>
             </div>
         </div>

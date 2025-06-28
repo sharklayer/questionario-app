@@ -12,7 +12,6 @@ export default function RootLayout({ children }) {
     <html lang="en" className="h-full bg-gray-50">
       <body className="h-full">
         <SessionProvider>
-          <div className="text-blue-500">Teste de Estilo Tailwind</div>
           {children}
         </SessionProvider>
       </body>

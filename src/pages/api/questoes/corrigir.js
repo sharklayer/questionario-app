@@ -1,6 +1,6 @@
 import { connectDB } from "@/lib/dbConnect";
-import Questao from "@/models/questao.model";
-import Resposta from "@/models/resposta.model";
+import Questao from "@/models/questao.model.mjs";
+import Resposta from "@/models/resposta.model.mjs";
 import { getSession } from "next-auth/react";
 
 export default async function handler(req, res) {

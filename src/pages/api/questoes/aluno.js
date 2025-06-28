@@ -1,5 +1,5 @@
 import { connectDB } from "@/lib/dbConnect";
-import Questao from "@/models/questao.model";
+import Questao from "@/models/questao.model.mjs";
 
 // Essa rota retorna questões sem o campo "correta" nas opções, evitando trapaça dos alunos
 export default async function handler(req, res) {

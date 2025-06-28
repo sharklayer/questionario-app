@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { connectDB } from "@/lib/dbConnect";
-import Usuario from "@/models/usuario.model";
+import Usuario from "@/models/usuario.model.mjs";
 import bcrypt from "bcrypt";
 
 export default NextAuth({
