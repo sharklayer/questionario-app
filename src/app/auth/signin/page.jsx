@@ -19,7 +19,7 @@ export default function Login() {
             if (session?.user?.isAdmin === true) {
                 router.replace('/admin/home');
             } else {
-                router.replace('/');
+                router.replace('/aluno/home');
             }
         }
     }, [session]);
@@ -57,7 +57,7 @@ export default function Login() {
             if (session?.user?.isAdmin === true) {
                 router.replace('/admin/home');
             } else {
-                router.replace('/');
+                router.replace('/aluno/home');
             }
         } else {
             setServerError('Email e/ou senha inválidos!');

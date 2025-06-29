@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import Usuario from '../models/usuario.model.mjs';
 import Questao from '../models/questao.model.mjs';
 import Resposta from '../models/resposta.model.mjs';
+import Atividade from '../models/atividade.model.mjs';
 
 //criação das coleções no MongoDB >> node src/lib/initDB.js
 async function syncDatabase() {
@@ -18,6 +19,7 @@ async function syncDatabase() {
       { name: 'Usuario', model: Usuario },
       { name: 'Questao', model: Questao },
       { name: 'Resposta', model: Resposta },
+      { name: 'Atividade', model: Atividade },
     ];
 
     for (const item of models) {

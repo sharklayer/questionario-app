@@ -15,6 +15,11 @@ const usuarioSchema = new Schema({
     type: String,
     required: true,
   },
+  rga: {
+    type: String,        
+    required: function () { return !this.isAdmin; }, //rga é obrigatório se não for admin
+    unique: true,
+  },
   isAdmin: {
     type: Boolean,
     default: false,
@@ -22,5 +27,4 @@ const usuarioSchema = new Schema({
   },
 });
 
-//exporta o modelo e reutiliza se já existir
 export default models.Usuario || model("Usuario", usuarioSchema);

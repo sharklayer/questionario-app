@@ -34,7 +34,7 @@ export default async function handler(req, res) {
 
   if (req.method === "POST") {
     const session = await getSession({ req });
-    if (!session?.user?.isAdmin) {
+    if (session?.user?.isAdmin === false) {
       return res.status(403).json({ error: "Apenas admin pode adicionar questões" });
     }
 
