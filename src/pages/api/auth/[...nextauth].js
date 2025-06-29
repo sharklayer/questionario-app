@@ -4,7 +4,8 @@ import { connectDB } from "@/lib/dbConnect";
 import Usuario from "@/models/usuario.model.mjs";
 import bcrypt from "bcrypt";
 
-export default NextAuth({
+// Declare e exporte o objeto de opções
+export const authOptions = {
   debug: true,
   providers: [
     CredentialsProvider({
@@ -22,7 +23,7 @@ export default NextAuth({
         if (!senhaCorreta) return null;
 
         return {
-          id: usuario._id,
+          id: usuario._id.toString(), // <-- Garante ID como string
           nome: usuario.nome,
           email: usuario.email,
           isAdmin: usuario.isAdmin,
@@ -37,6 +38,7 @@ export default NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        token.id = user.id;           // <-- ADICIONA O ID NO TOKEN!
         token.isAdmin = user.isAdmin;
         token.nome = user.nome;
       }
@@ -44,14 +46,19 @@ export default NextAuth({
     },
     async session({ session, token }) {
       if (token) {
+        session.user = session.user || {};
+        session.user.id = token.id;          // <-- ADICIONA O ID NA SESSION!
         session.user.isAdmin = token.isAdmin;
         session.user.nome = token.nome;
       }
-      console.log('Sessão modificada:', session);
+      
       return session;
     },
   },
   pages: {
     signIn: "/auth/signin",
   },
-});
+};
+
+// Exporta padrão para NextAuth usar normalmente
+export default NextAuth(authOptions);

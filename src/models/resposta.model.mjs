@@ -7,6 +7,11 @@ const respostaSchema = new Schema({
     ref: "Usuario",
     required: true
   },
+  atividade: {
+    type: Schema.Types.ObjectId,
+    ref: "Atividade",
+    required: true
+  },
   respostas: [
     {
       questaoId: {
@@ -14,7 +19,7 @@ const respostaSchema = new Schema({
         ref: "Questao",
         required: true
       },
-      resposta: [Number] // Índices das opções escolhidas
+      resposta: [Number]
     }
   ],
   acertos: Number,

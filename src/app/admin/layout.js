@@ -10,6 +10,7 @@ import {
   UsersIcon,
   UserCircleIcon,
   DocumentTextIcon,
+  ClipboardDocumentListIcon,
   QuestionMarkCircleIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline'
@@ -20,6 +21,7 @@ import { usePathname } from 'next/navigation'
 const _navigation = [
   { name: 'Dashboard', href: '/admin/home', icon: HomeIcon, current: true },
   { name: 'Alunos', href: '/admin/alunos', icon: UsersIcon, current: false },
+  { name: 'Atividades', href: '/admin/atividades', icon: ClipboardDocumentListIcon, current: false },
   { name: 'Questões', href: '/admin/questoes', icon: DocumentTextIcon, current: false },
 ]
 

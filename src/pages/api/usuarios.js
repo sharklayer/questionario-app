@@ -1,9 +1,17 @@
 import { connectDB } from "@/lib/dbConnect";
 import Usuario from "@/models/usuario.model.mjs";
 import bcrypt from "bcrypt";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "./auth/[...nextauth]";
 
 export default async function handler(req, res) {
   await connectDB();
+
+  const session = await getServerSession(req, res, authOptions);
+  // Exemplo: só admin pode listar ou cadastrar usuários
+  if (!session || !session.user?.isAdmin) {
+    return res.status(403).json({ error: "Apenas admin pode acessar esta rota." });
+  }
 
   if (req.method === "GET") {
     // Lista todos os usuários (atenção: nunca envie a senha!)

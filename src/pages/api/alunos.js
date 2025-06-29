@@ -1,7 +1,8 @@
 import { connectDB } from "@/lib/dbConnect";
 import Usuario from "@/models/usuario.model.mjs";
-import { getSession } from "next-auth/react";
 import bcrypt from "bcrypt";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "./auth/[...nextauth]";
 
 // Gera senha aleatória
 /*
@@ -22,8 +23,8 @@ function gerarSenhaRGA(rga) {
 export default async function handler(req, res) {
   await connectDB();
 
-  const session = await getSession({ req });
-  if (session?.user?.isAdmin === false) {
+  const session = await getServerSession(req, res, authOptions);
+  if (!session || !session.user?.isAdmin) {
     return res.status(403).json({ error: "Apenas admin pode acessar esta rota." });
   }
 
